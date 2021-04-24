@@ -1,0 +1,19 @@
+name = "AutoARIMA"
+uuid = "32b09d1f-6fe5-4c45-a185-b232da8f0c68"
+authors = ["Pierre Nodet <nodet.pierre@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
