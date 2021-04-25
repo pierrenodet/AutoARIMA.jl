@@ -13,7 +13,7 @@ function hannan_rissanen(z::AbstractVector, p::Integer, q::Integer)
     Z = Matrix{T}(undef, N - m - q, p + q + 1)
     Z[:,1] .= one(T)
     for j in 1:p
-        Z[:,j + 1] = view(z, j + m:N + j - q - 1)
+        Z[:,j + 1] = view(z, j + m - p + 1:N + j - q - p)
     end
     for j in 1:q
         Z[:,j + p + 1] = view(a, j:N - m + j - q - 1)
@@ -27,15 +27,36 @@ function hannan_rissanen(z::AbstractVector, p::Integer, q::Integer)
     return μ, ϕ, θ, σ2
 end
 
-# function MA(model::M, m::Integer) where {M <: ARMA{p,q,T}}
-#     T = typeof(zero(eltype(z)) / 1)
-#     ψ = Vector{T}(undef, m)
-#     for j in 1:m
-#         tmp = zero(T)
-#         for k in 1:max(j, p)
-#             tmp += model.ϕ[k] * ψ[j - k + 1]
-#         end
-#         ψ[j] = model.θ[j] + tmp
-#     end
-#     return MA(model.μ, SVector{m}(ψ), model.σ2)    
-# end
+function forecast(model::M, z::AbstractVector{T}) where {p,q,T,M <: ARMA{p,q,T}}
+    N = length(z)
+    a = Vector{T}(undef, N)
+    ar = AR(model.μ, model.ϕ, model.σ2)
+    a[1] = forecast(ar)
+    for i in 2:N
+        a[i] = z[i] - forecast(ar, view(z, 1:i - 1))
+    end
+    ma = AR(0.0, model.θ, 0.0)
+    return forecast(ma, a) + forecast(ar, z)
+end
+
+forecast(model::M) where {p,q,T,M <: ARMA{p,q,T}} = forecast(model, T[])
+
+function MA(model::M, m::Integer) where {p,q,T,M <: ARMA{p,q,T}}
+    ψ = Vector{T}(undef, m)
+    for j in 1:m
+        for i in 1:p
+            ψ[j] = (j > q ? zero(T) : model.θ[j]) + model.ϕ[i] * (j - i == 0 ? one(T) : j - i < 0 ? zero(T) : ψ[j - i])
+        end
+    end
+    return MA(model.μ, SVector{m,T}(ψ), model.σ2)
+end
+
+function AR(model::M, m::Integer) where {p,q,T,M <: ARMA{p,q,T}}
+        π = Vector{T}(undef, m)
+    for j in 1:m
+        for i in 1:q
+            π[j] = -(j > p ? zero(T) : model.ϕ[j]) - model.θ[i] * (j - i == 0 ? one(T) : j - i < 0 ? zero(T) : π[j - i])
+        end
+    end
+    return AR(model.μ, SVector{m,T}(π), model.σ2)
+end

@@ -3,16 +3,6 @@ using LinearAlgebra, Polynomials, Statistics, Base.Iterators
 isstationary(model::AR) = false
 
 isinversible(model::AR) = true
-
-# function inverse(model::AR{p,T}, q) where {p,T}
-#     ψ = Vector{T}(undef, q)
-#     for j in 1:q
-#         for i in 1:p
-#             ψ[j] += model.ϕ[i] * (j - i == 0 ? one(T) : j - i < 0 ? zero(T) : ψ[max(j - i, 1)])
-#         end
-#     end
-#     return MA{q,T}(model.μ, ψ, model.σ2)
-# end
     
 function least_squares(z::AbstractVector{T}, p::Integer) where {T}
     N = length(z)

@@ -64,11 +64,3 @@ function partial_correlogram(z::AbstractVector, k::Integer; recursive::Bool=true
     end
     return -1 / √N, ϕpp, 1 / √N
 end
-
-function boxcox(z, λ)
-	if λ == 0
-		return log.(z) 
-	else
-		return (z.^λ .- 1) ./ λ
-	end
-end

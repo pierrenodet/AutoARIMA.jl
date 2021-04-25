@@ -60,10 +60,10 @@ using Test, AutoARIMA, Statistics
         @test ϕ ≈ [-0.39,0.30,-0.17,0.07,-0.10,-0.05,0.04,-0.04,0.00,0.01,0.11,-0.07,0.15,0.04,0.01] rtol = 0.05
     end
 
-    # @testset "Exercise2.2" begin
-    #     @test isstationary(AR{2}(0.0,[0.80,0.55],1.0))
-    #     @test !isstationary(AR{2}(0.0,[0.80,0.28],1.0))
+    # @testset "Table4.2" begin
+    #     @test AR(ARMA(1.0,SA[-0.3],SA[-0.5],1.0),7).ϕ ≈ SA[0.2,0.4,0.2,0.1,0.05,0.025,0.0125]
     # end
+
 end
 
 

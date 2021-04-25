@@ -19,7 +19,8 @@ function innovations!(θ::AbstractMatrix{T}, σ2::AbstractVector{T}, γ::Abstrac
     end
 end
 
-function innovations(z::AbstractVector, q::Integer; m::Integer=10)
+function innovations(z::AbstractVector, q::Integer; m::Integer=0)
+    m = max(m, q)
     γ = map(i -> autocovariance(z, i), 0:m)
     T = typeof(zero(eltype(z)) / 1)
     σ2 = Vector{T}(undef, m + 1)
