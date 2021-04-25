@@ -1,4 +1,4 @@
-using LinearAlgebra, Polynomials, Statistics, Base.Iterators
+using LinearAlgebra, Statistics
 
 isstationary(model::AR) = false
 
@@ -15,7 +15,7 @@ function least_squares(z::AbstractVector{T}, p::Integer) where {T}
     μ = ϕ[1]
     ε = view(z, p + 1:N) - Z * ϕ
     σ2 = dot(ε, ε) / (N - p)
-return μ, reverse(view(ϕ, 2:p + 1)), σ2
+    return μ, reverse(view(ϕ, 2:p + 1)), σ2
 end
 
 function yule_walker(z::AbstractVector, p::Integer)
@@ -121,8 +121,7 @@ end
 function forecast(model::M, z::AbstractVector{T}) where {p,T,M <: AR{p,T}}
     zhat = model.μ
     N = length(z)
-    h = min(N, p)
-    for i in 1:h
+    for i in 1:min(N, p)
         zhat += model.ϕ[i] * z[N - i + 1]
     end
     return zhat

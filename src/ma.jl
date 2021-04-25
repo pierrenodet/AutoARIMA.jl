@@ -42,7 +42,7 @@ function forecast(model::M, z::AbstractVector{T}) where {q,T,M <: MA{q,T}}
             a[i + 1] -= model.θ[j] * a[i - j + 1]
         end
     end
-    zhat = zero(T)
+    zhat = model.μ
     for j in 1:min(N, q)
         zhat += model.θ[j] * a[N - j + 2]
     end
