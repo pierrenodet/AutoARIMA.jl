@@ -1,9 +1,10 @@
 using StaticArrays, LinearAlgebra
 
-function hannan_rissanen(z::AbstractVector, p::Integer, q::Integer)
+function hannan_rissanen(z::AbstractVector, p::Integer, q::Integer, m::Integer=20)
+    m >= 0 || throw(ArgumentError("order of first ar model should be positive"))
     T = typeof(zero(eltype(z)) / 1)
     N = length(z)
-    m = 20 + max(p, q)
+    m = m + max(p, q)
     μinf, ϕinf, σ2inf = levinson_durbin(z, m)
     ar = AR(μinf, SVector{m}(ϕinf), σ2inf)
     a = Vector{T}(undef, N - m)
