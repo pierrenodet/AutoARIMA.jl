@@ -126,5 +126,3 @@ function forecast(model::M, z::AbstractVector{T}) where {p,T,M <: AR{p,T}}
     end
     return zhat
 end
-
-forecast(model::M) where {p,T,M <: AR{p,T}} = forecast(model, T[])

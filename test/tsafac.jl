@@ -8,11 +8,11 @@ using Test, AutoARIMA, Statistics
         @test θ ≈ [-0.48] rtol = 0.05
         @test σ2 ≈ 0.098 rtol = 0.05
 
-        θ, σ2 = innovations(diff(seriesA), 1, m=3)
-        @test θ ≈ [-0.53] rtol = 0.05
-        @test σ2 ≈ 0.107 rtol = 0.05
+        θ, σ2 = innovations(diff(seriesA), 1, m=10)
+        @test θ ≈ [-0.53] rtol = 0.01
+        @test σ2 ≈ 0.107 rtol = 0.01
 
-        θ, σ2 = innovations(diff(seriesB), 1, m=1)
+        θ, σ2 = innovations(diff(seriesB), 1)
         @test θ ≈ [0.09] rtol = 0.05
         @test σ2 ≈ 52.2 rtol = 0.05
 
@@ -21,8 +21,8 @@ using Test, AutoARIMA, Statistics
         @test ϕ ≈ [0.81] rtol = 0.05
         @test σ2 ≈ 0.019 rtol = 0.05
 
-        θ, σ2 = innovations(diff(diff(seriesC)), 2, m=2)
-        @test θ ≈ [-0.09,-0.07] rtol = 0.2
+        θ, σ2 = innovations(diff(diff(seriesC)), 2, m=30)
+        @test θ ≈ [-0.09,-0.07] rtol = 0.05
         @test σ2 ≈ 0.020 rtol = 0.05
 
         μ, ϕ, σ2 = levinson_durbin(seriesD, 1)
@@ -30,9 +30,9 @@ using Test, AutoARIMA, Statistics
         @test ϕ ≈ [0.86] rtol = 0.05
         @test σ2 ≈ 0.093 rtol = 0.05
 
-        θ, σ2 = innovations(diff(seriesD), 1, m=1)
+        θ, σ2 = innovations(diff(seriesD), 1)
         @test θ ≈ [-0.05] rtol = 0.05
-        @test σ2 ≈ 0.096 rtol = 0.05
+        @test σ2 ≈ 0.096 rtol = 0.01
 
         μ, ϕ, σ2 = levinson_durbin(seriesE, 2)
         @test μ ≈ 14.9 rtol = 0.05
