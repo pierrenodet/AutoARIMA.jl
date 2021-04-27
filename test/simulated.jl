@@ -54,7 +54,7 @@ using Test, AutoARIMA, StaticArrays, Base.Iterators
         μ, ϕ, θ, σ2 = hannan_rissanen(z,2, 2)
         @test μ ≈ 5.0 rtol = 0.05
         @test ϕ ≈ [-0.7,0.2] rtol = 0.05
-        @test θ ≈ [0.7,0.2] rtol = 0.05
+        @test θ ≈ [0.7,0.2] rtol = 0.1
         @test σ2 ≈ 1.0 rtol = 0.05
         
     end
@@ -69,7 +69,7 @@ using Test, AutoARIMA, StaticArrays, Base.Iterators
         μ, ϕ, θ, σ2 = hannan_rissanen(z,2, 2)
         @test μ ≈ 5.0 rtol = 0.05
         @test ϕ ≈ [-0.7,0.2] rtol = 0.05
-        @test θ ≈ [0.7,0.2] rtol = 0.05
+        @test θ ≈ [0.7,0.2] rtol = 0.1
         @test σ2 ≈ 1.0 rtol = 0.05
         
     end
@@ -84,7 +84,7 @@ using Test, AutoARIMA, StaticArrays, Base.Iterators
         μ, ϕ, θ, σ2 = hannan_rissanen(difference(z), 2, 2)
         @test μ ≈ 3.0 rtol = 0.05
         @test ϕ ≈ [0.5,-0.3] rtol = 0.05
-        @test θ ≈ [0.2,-0.2] rtol = 0.05
+        @test θ ≈ [0.2,-0.2] rtol = 0.1
         @test σ2 ≈ 1.0 rtol = 0.05
         
     end
