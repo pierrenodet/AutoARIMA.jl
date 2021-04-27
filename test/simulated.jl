@@ -34,7 +34,7 @@ using Test, AutoARIMA, StaticArrays, Base.Iterators
 
         ma = MA(1.0, SA[0.2,-0.2], 0.2)
         z = Float64[]
-        for s in take(simulate(ma), 5000)
+        for s in take(simulate(ma), 10000)
             push!(z, s)
         end
         μ, ϕ, θ, σ2 = hannan_rissanen(z, 0, 2, n=10)
