@@ -5,5 +5,5 @@ function forecast(model::M, z::AbstractVector{T}) where {p,d,q,T,M <: ARIMA{p,d,
     ∇zhat = forecast(arma, ∇z)
     push!(∇z, ∇zhat)
     z = N < d ? fill(model.μ, d) : z
-    return integrate(∇z, z, d=d)[end]
+    return last(integrate(∇z, z, d=d))
 end

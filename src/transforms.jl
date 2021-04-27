@@ -23,30 +23,33 @@ function guerrero(z; lower=-1, upper=2, s=2)
     return optimize(cv, lower, upper).minimizer
 end
 
-function difference(z::AbstractVector; d::Integer=1,k::Integer=1)
+function difference(z::AbstractVector{T}; d::Integer=1,s::Integer=1) where T
     N = length(z)
-    differenced = copy(z)
+    differenced = Vector{T}(undef, N)
+    @inbounds @simd for i in 1:N
+        differenced[i] = z[i]
+    end
     @inbounds for j in 1:d
-        for i in 1:N - j * k
-            differenced[N - i + 1] -= differenced[N - i + 1 - k]
+        for i in 1:N - j * s
+            differenced[N - i + 1] -= differenced[N - i + 1 - s]
         end
     end
-    return differenced[1 + d * k:N]
+    return differenced[1 + d * s:N]
 end
 
-function integrate(z::AbstractVector{T}, z0::AbstractVector; d::Integer=1,k::Integer=1) where T
+function integrate(z::AbstractVector{T}, z0::AbstractVector; d::Integer=1,s::Integer=1) where T
     N = length(z)
-    integrated = Vector{T}(undef, N + d * k)
+    integrated = Vector{T}(undef, N + d * s)
     N0 = length(z0)
-    for i in 1:N + d * k
-        integrated[i] = i > d * k ? z[i - d * k] : i > N0 ? zero(T) : z0[i]
+    for i in 1:N + d * s
+        integrated[i] = i > d * s ? z[i - d * s] : i > N0 ? zero(T) : z0[i]
     end
     for j in 1:d
-        for i in (1 + k):N + d * k
-            integrated[i] += integrated[i - k]
+        for i in (1 + s):N + d * s
+            integrated[i] += integrated[i - s]
         end    
     end
     return integrated
 end
 
-integrate(z::AbstractVector{T}; d::Integer=1,k::Integer=1) where T = integrate(z, T[], d=d, k=k)
+integrate(z::AbstractVector{T}; d::Integer=1,s::Integer=1) where T = integrate(z, T[], d=d, s=s)

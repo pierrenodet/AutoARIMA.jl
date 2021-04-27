@@ -60,6 +60,12 @@ using Test, AutoARIMA, Statistics
         @test ϕ ≈ [-0.39,0.30,-0.17,0.07,-0.10,-0.05,0.04,-0.04,0.00,0.01,0.11,-0.07,0.15,0.04,0.01] rtol = 0.05
     end
 
+    # @testset "Section9.1" begin
+    #     sarima = auto_sarimax(log.(seriesG), 0, 1, 1, 0, 1, 1, 12)
+    #     @test sarima.θ ≈ [0.4] rtol = 0.05
+    #     @test sarima.Θ ≈ [0.6] rtol = 0.05
+    # end
+
     # @testset "Table4.2" begin
     #     @test AR(ARMA(1.0,SA[-0.3],SA[-0.5],1.0),7).ϕ ≈ SA[0.2,0.4,0.2,0.1,0.05,0.025,0.0125]
     # end
