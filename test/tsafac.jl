@@ -1,6 +1,6 @@
 using Test, AutoARIMA, Statistics
 
-@testset "TimeSeriesAnalysisForecastingandControl" begin
+@testset "Time Series Analysis Forecasting and Control" begin
     @testset "Table6.5" begin
         μ, ϕ, θ, σ2 = hannan_rissanen(seriesA, 1, 1)
         @test μ ≈ 2.45 rtol = 0.2

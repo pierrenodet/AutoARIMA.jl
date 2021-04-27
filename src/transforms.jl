@@ -22,3 +22,31 @@ function guerrero(z; lower=-1, upper=2, s=2)
     end
     return optimize(cv, lower, upper).minimizer
 end
+
+function difference(z::AbstractVector; d::Integer=1,k::Integer=1)
+    N = length(z)
+    differenced = copy(z)
+    @inbounds for j in 1:d
+        for i in 1:N - j * k
+            differenced[N - i + 1] -= differenced[N - i + 1 - k]
+        end
+    end
+    return differenced[1 + d * k:N]
+end
+
+function integrate(z::AbstractVector{T}, z0::AbstractVector; d::Integer=1,k::Integer=1) where T
+    N = length(z)
+    integrated = Vector{T}(undef, N + d * k)
+    N0 = length(z0)
+    for i in 1:N + d * k
+        integrated[i] = i > d * k ? z[i - d * k] : i > N0 ? zero(T) : z0[i]
+    end
+    for j in 1:d
+        for i in (1 + k):N + d * k
+            integrated[i] += integrated[i - k]
+        end    
+    end
+    return integrated
+end
+
+integrate(z::AbstractVector{T}; d::Integer=1,k::Integer=1) where T = integrate(z, T[], d=d, k=k)

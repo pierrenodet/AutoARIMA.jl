@@ -1,6 +1,6 @@
-using Test, AutoARIMA
+using Test, AutoARIMA, StaticArrays
 
-@testset "MathematicalProperties" begin
+@testset "Mathematical Properties" begin
 
     @test partial_correlogram(seriesF, 2)[2] ≈ map(i -> partial_autocorrelation(seriesF, i), 1:2)
     @test correlogram(seriesF, 2)[2] ≈ map(i -> autocorrelation(seriesF, i), 0:2)

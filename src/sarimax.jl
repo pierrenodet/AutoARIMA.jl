@@ -17,10 +17,13 @@ WN(μ::T,σ2::T) where T = SARIMAX{0,0,0,0,0,0,0,T}(μ, SA{T}[], SA{T}[], σ2)
 AR(μ::T,ϕ::SVector{p,T},σ2::T) where {p,T} = SARIMAX{p,0,0,0,0,0,0,T}(μ, ϕ, SA{T}[], σ2)
 MA(μ::T,θ::SVector{q,T},σ2::T) where {q,T} = SARIMAX{0,0,q,0,0,0,0,T}(μ, SA{T}[], θ, σ2)
 ARMA(μ::T,ϕ::SVector{p,T},θ::SVector{q,T},σ2::T) where {p,q,T} = SARIMAX{p,0,q,0,0,0,0,T}(μ, ϕ, θ, σ2)
+ARIMA{d}(μ::T,ϕ::SVector{p,T},θ::SVector{q,T},σ2::T) where {p,d,q,T} = SARIMAX{p,d,q,0,0,0,0,T}(μ, ϕ, θ, σ2)
 
 function k(::M) where {p,d,q,P,D,Q,s,T,M <: SARIMAX{p,d,q,P,D,Q,s,T}}
     return p + q + P + Q + 2
 end
+
+forecast(model::M) where {p,d,q,P,D,Q,s,T,M <: SARIMAX{p,d,q,P,D,Q,s,T}} = forecast(model, T[])
 
 struct SARIMAXSimulator{p,d,q,P,D,Q,s,T}
     model::SARIMAX{p,d,q,P,D,Q,s,T}

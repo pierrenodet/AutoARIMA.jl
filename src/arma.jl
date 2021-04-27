@@ -1,6 +1,6 @@
 using StaticArrays, LinearAlgebra
 
-function hannan_rissanen(z::AbstractVector, p::Integer, q::Integer, m::Integer=20)
+function hannan_rissanen(z::AbstractVector, p::Integer, q::Integer; m::Integer=20)
     m >= 0 || throw(ArgumentError("order of first ar model should be positive"))
     T = typeof(zero(eltype(z)) / 1)
     N = length(z)
@@ -23,35 +23,52 @@ function hannan_rissanen(z::AbstractVector, p::Integer, q::Integer, m::Integer=2
     ε = view(z, m + q + 1:N) - Z * ϕ
     σ2 = dot(ε, ε) / (N - m - q)
     μ = ϕ[1]
-    θ = reverse(view(ϕ, p + 2:q + p + 1))
-    ϕ = reverse(view(ϕ, 2:p + 1))
+    θ = reverse(ϕ[p + 2:end])
+    ϕ = reverse(ϕ[2:p + 1])
     return μ, ϕ, θ, σ2
 end
 
 function forecast(model::M, z::AbstractVector{T}) where {p,q,T,M <: ARMA{p,q,T}}
-    ar = AR(0.0, model.ϕ, 0.0)
-    ma = MA(0.0, model.θ, 0.0)
-    return forecast(ma, z) + forecast(ar, z) + model.μ
+    N = length(z)
+    a = Vector{T}(undef, N + 1)
+    a[1] = zero(T)
+    for i in 1:N
+        a[i + 1] = z[i] - model.μ
+        for j in 1:min(q, i)
+            a[i + 1] -= model.θ[j] * a[i - j + 1]
+        end
+        for j in 1:min(p, i - 1)
+            a[i + 1] -= model.ϕ[j] * z[i - j]
+        end
+    end
+    zhat = model.μ
+    for j in 1:min(N, q)
+        zhat += model.θ[j] * a[N - j + 2]
+    end
+    for j in 1:min(N, p)
+        zhat += model.ϕ[j] * z[N - j + 1]
+    end
+    return zhat
 end
-
-forecast(model::M) where {p,q,T,M <: ARMA{p,q,T}} = forecast(model, T[])
 
 function MA(model::M, m::Integer) where {p,q,T,M <: ARMA{p,q,T}}
     ψ = Vector{T}(undef, m)
     for j in 1:m
-        for i in 1:p
-            ψ[j] = (j > q ? zero(T) : model.θ[j]) + model.ϕ[i] * (j - i == 0 ? one(T) : j - i < 0 ? zero(T) : ψ[j - i])
+        ψ[j] = (j > q ? zero(T) : model.θ[j])
+        for k in 1:p
+            ψ[j] += model.ϕ[k] * (j - k == 0 ? one(T) : j - k < 0 ? zero(T) : ψ[j - k])
         end
     end
-    return MA(model.μ, SVector{m,T}(ψ), model.σ2)
+    return MA(model.μ / (1 - sum(model.ϕ)), SVector{m,T}(ψ), model.σ2)
 end
 
 function AR(model::M, m::Integer) where {p,q,T,M <: ARMA{p,q,T}}
         π = Vector{T}(undef, m)
     for j in 1:m
-        for i in 1:q
-            π[j] = -(j > p ? zero(T) : model.ϕ[j]) - model.θ[i] * (j - i == 0 ? one(T) : j - i < 0 ? zero(T) : π[j - i])
+        π[j] = -(j > p ? zero(T) : model.ϕ[j])
+        for k in 1:q
+            π[j] += - model.θ[k] * (j - k == 0 ? one(T) : j - k < 0 ? zero(T) : π[j - k])
         end
     end
-    return AR(model.μ, SVector{m,T}(π), model.σ2)
+    return AR(model.μ / (1 - sum(model.ϕ)) * (1 + sum(π)), SVector{m,T}(π), model.σ2)
 end
