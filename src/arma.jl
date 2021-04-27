@@ -1,6 +1,6 @@
 using StaticArrays, LinearAlgebra
 
-function hannan_rissanen(z::AbstractVector, p::Integer, q::Integer; m::Integer=20)
+function hannan_rissanen(z::AbstractVector, p::Integer, q::Integer; m::Integer=20, n::Integer=1)
     m >= 0 || throw(ArgumentError("order of first ar model should be positive"))
     T = typeof(zero(eltype(z)) / 1)
     N = length(z)
@@ -19,12 +19,31 @@ function hannan_rissanen(z::AbstractVector, p::Integer, q::Integer; m::Integer=2
     for j in 1:q
         Z[:,j + p + 1] = view(a, j:N - m + j - q - 1)
     end
-    ϕ = Z \ view(z, m + q + 1:N)
-    ε = view(z, m + q + 1:N) - Z * ϕ
+    zt = view(z, m + q + 1:N)
+    ϕθ = Z \ zt
+    ε = zt - Z * ϕθ
     σ2 = dot(ε, ε) / (N - m - q)
-    μ = ϕ[1]
-    θ = reverse(ϕ[p + 2:end])
-    ϕ = reverse(ϕ[2:p + 1])
+    μ = ϕθ[1]
+    θ = reverse(ϕθ[p + 2:end])
+    ϕ = reverse(ϕθ[2:p + 1])
+    σ2prev = Inf
+    for k in 2:n
+        arma = ARMA(μ, SVector{p,T}(ϕ), SVector{q,T}(θ), σ2)
+        for i in 1:(N - m)
+            a[i] = z[i + m] - forecast(arma, view(z, 1:i + m - 1))
+        end
+        for j in 1:q
+            Z[:,j + p + 1] = view(a, j:N - m + j - q - 1)
+        end
+        ϕθ = Z \ zt
+        ε = zt - Z * ϕθ
+        σ2prev = σ2
+        σ2 = dot(ε, ε) / (N - m - q)
+        if σ2 > σ2prev σ2 = σ2prev; break end
+        μ = ϕθ[1]
+        θ = reverse(ϕθ[p + 2:end])
+        ϕ = reverse(ϕθ[2:p + 1])
+    end
     return μ, ϕ, θ, σ2
 end
 
