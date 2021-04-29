@@ -17,14 +17,14 @@ function mape(z::AbstractVector, zhat::AbstractVector)
     return mean(abs.(z .- zhat) ./ z)
 end
 
-function aic(m::M) where {M <: SARIMAX}
+function aic(m::M) where {M <: SARIMA}
     return -2 * log(m.σ2) + 2 * k(m)
 end
 
-function aicc(m::M, n::Integer) where {M <: SARIMAX}
+function aicc(m::M, n::Integer) where {M <: SARIMA}
     return aic(m) + 2 * k(m) * (k(m) + 1) / (n - k(m) - 1)
 end
 
-function bic(m::M, n::Integer) where {M <: SARIMAX}
+function bic(m::M, n::Integer) where {M <: SARIMA}
     return -2 * log(m.σ2) + log(n) * k(m)
 end
