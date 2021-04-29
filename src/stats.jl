@@ -41,26 +41,3 @@ function partial_autocorrelation(z::AbstractVector, k::Integer)
     Ρstar[k,k] = autocorrelation(z, k)
     return det(Ρstar) / det(cholesky(Symmetric(Ρ)))
 end
-
-function correlogram(z::AbstractVector, k::Integer)
-    N = length(z)
-    return -1 / √N, map(i -> autocorrelation(z, i), 0:k), 1 / √N
-end
-
-function partial_correlogram(z::AbstractVector, k::Integer; recursive::Bool=true)
-    N = length(z)
-    if recursive
-        ρ = map(i -> autocorrelation(z, i), 1:k)
-        T = typeof(zero(eltype(z)) / 1)
-        ϕ = zeros(T, k)
-        ϕpp = zeros(T, k)
-        σ2 = Ref{T}(autocovariance(z, 0))
-        for i in 1:k
-            levinson_durbin!(ϕ, σ2, ρ, i)
-            ϕpp[i] = ϕ[i]
-        end
-    else
-        ϕpp = map(i -> partial_autocorrelation(z, i), 1:k)
-    end
-    return -1 / √N, ϕpp, 1 / √N
-end
