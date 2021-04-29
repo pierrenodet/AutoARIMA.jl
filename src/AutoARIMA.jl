@@ -7,10 +7,9 @@ export innovations, levinson_durbin, least_squares, yule_walker, hannan_rissanen
 export boxcox, guerrero, difference, integrate
 export simulate, forecast
 export aic, aicc, bic, mse, rmse, mae, mape
-export AR,MA,ARMA,ARIMA,SARIMA,SARIMAX
+export AR,MA,ARMA,ARIMA,SARIMA
 
 include("stats.jl")
-include("sarimax.jl")
 include("sarima.jl")
 include("ar.jl")
 include("ma.jl")
