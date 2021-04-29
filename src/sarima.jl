@@ -19,7 +19,7 @@ AR(μ::T,ϕ::SVector{p,T},σ2::T) where {p,T} = SARIMA{p,0,0,0,0,0,0,T}(μ, ϕ, 
 AR{p}(μ::T,ϕ::AbstractVector{T},σ2::T) where {p,T} = SARIMA{p,0,0,0,0,0,0,T}(μ, SVector{p,T}(ϕ), SA{T}[], SA{T}[], SA{T}[], σ2)
 
 MA(μ::T,θ::SVector{q,T},σ2::T) where {q,T} = SARIMA{0,0,q,0,0,0,0,T}(μ, SA{T}[], θ, SA{T}[], SA{T}[], σ2)
-MA{q}(μ::T,θ::AbstractVector{T},σ2::T) where {q,T} = SARIMA{p,0,0,0,0,0,0,T}(μ, SA{T}[], SVector{q,T}(θ), SA{T}[], SA{T}[], σ2)
+MA{q}(μ::T,θ::AbstractVector{T},σ2::T) where {q,T} = SARIMA{0,0,q,0,0,0,0,T}(μ, SA{T}[], SVector{q,T}(θ), SA{T}[], SA{T}[], σ2)
 
 ARMA(μ::T,ϕ::SVector{p,T},θ::SVector{q,T},σ2::T) where {p,q,T} = SARIMA{p,0,q,0,0,0,0,T}(μ, ϕ, θ, SA{T}[], SA{T}[], σ2)
 ARMA{p,q}(μ::T,ϕ::AbstractVector{T},θ::AbstractVector{T},σ2::T) where {p,q,T} = SARIMA{p,0,q,0,0,0,0,T}(μ, SVector{p,T}(ϕ), SVector{q,T}(θ), SA{T}[], SA{T}[], σ2)
