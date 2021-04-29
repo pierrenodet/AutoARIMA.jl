@@ -1,5 +1,3 @@
-using StaticArrays, LinearAlgebra
-
 function hannan_rissanen(z::AbstractVector, p::Integer, q::Integer; m::Integer=20, n::Integer=1)
     m >= 0 || throw(ArgumentError("order of first ar model should be positive"))
     T = typeof(zero(eltype(z)) / 1)

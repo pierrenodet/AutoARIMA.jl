@@ -1,5 +1,3 @@
-using Statistics, Optim
-
 function boxcox(z, λ)
     reduce(&, z .> 0) || throw(DomainError("boxcox requires strictly positive data"))
 	if λ == 0

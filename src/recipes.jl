@@ -1,5 +1,3 @@
-using RecipesBase
-
 @recipe function f(::Type{Val{:tsaplot}}, x, y, z)
 
     N = length(x)

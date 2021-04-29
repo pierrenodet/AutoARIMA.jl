@@ -1,5 +1,3 @@
-using Statistics
-
 function mse(z::AbstractVector, zhat::AbstractVector)
     return mean((z .- zhat).^2)
 end

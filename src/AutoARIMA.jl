@@ -1,5 +1,12 @@
 module AutoARIMA
 
+using LinearAlgebra
+using Optim
+using Polynomials
+using RecipesBase
+using StaticArrays
+using Statistics
+
 export seriesA,seriesB,seriesB2,seriesC,seriesD,seriesE,seriesF,seriesG
 export autocovariance,autocovariance_matrix,autocorrelation,autocorrelation_matrix,partial_autocorrelation
 export isinversible,isstationary,inverse

@@ -1,5 +1,3 @@
-using StaticArrays
-
 # -----------------------------------------------------
 # 
 # Datasets from Time Series Analysis by Box and Jenkins

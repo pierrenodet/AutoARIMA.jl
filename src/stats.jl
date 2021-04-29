@@ -1,5 +1,3 @@
-using Statistics, LinearAlgebra
-
 function autocovariance(z::AbstractVector{T}, k::Integer) where {T}
     N = length(z)
     m = mean(z)

@@ -1,5 +1,3 @@
-using LinearAlgebra, Statistics
-
 isstationary(model::AR) = false
 
 isinversible(model::AR) = true

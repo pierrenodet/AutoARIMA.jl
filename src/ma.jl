@@ -1,5 +1,3 @@
-using StaticArrays
-
 isstationary(model::MA) = true
     
 isinversible(model::MA) = false

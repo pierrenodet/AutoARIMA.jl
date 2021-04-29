@@ -1,5 +1,3 @@
-using StaticArrays
-
 struct SARIMA{p,d,q,P,D,Q,s,T} 
     μ::T
     ϕ::SVector{p,T}
