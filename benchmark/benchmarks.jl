@@ -16,7 +16,7 @@ end
 SUITE["fit"]["ma"] = BenchmarkGroup()
 for f in (innovations,)
     for q in (1, 10)
-        SUITE["fit"]["ma"][string(f),q] = @benchmarkable $f($z, $q, m=100)
+        SUITE["fit"]["ma"][string(f),q] = @benchmarkable $f($z, $q, n=20)
     end
 end
 
