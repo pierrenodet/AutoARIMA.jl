@@ -27,7 +27,7 @@ end
 
 function fit(params::MSARIMAParams, z::AbstractVector; n::Integer=10)
     M = length(params.p)
-    length(z) > maximum(arima.d) * maximum(arima.s) || throw(DomainError("ARIMA requires at least d data points"))
+    length(z) > maximum(params.d) * (1 + maximum(params.s)) || throw(DomainError("ARIMA requires at least d+D*s data points"))
     armas = ARMAModel[]
     for i in 1:M
         arma = fit(ARMAParams(params.p[i] .* params.s[i], params.q[i] .* params.s[i]), difference(z, d=params.d[i], s=params.s[i]), n=n)

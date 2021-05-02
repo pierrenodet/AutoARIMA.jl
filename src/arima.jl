@@ -10,7 +10,9 @@ end
 ARIMAParams(c::Bool,p::Integer,d::Integer,q::Integer) = ARIMAParams(collect(!c:p), d, collect(1:q))
 ARIMAParams(p::Integer,d::Integer,q::Integer) = ARIMAParams(true, p, d, q)
 
-function toarma(params::ARIMAParams, arma::ARMAModel{p,q,T}) where {p,q,T}
+function toarma(params::ARIMAParams, arma::ARMAModel)
+    p = isempty(params.p) ? 0 : maximum(params.p)
+    q = isempty(params.q) ? 0 : maximum(params.q)
     d = params.d
     ϕdp = Polynomial([1;.-arma.ϕ]) * Polynomial(1 - variable())^d
     ϕ0 = .-coeffs(ϕdp)[2:end]
