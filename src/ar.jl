@@ -1,30 +1,52 @@
-isstationary(model::AR) = false
-
-isinversible(model::AR) = true
-    
-function least_squares(z::AbstractVector{T}, p::Integer) where {T}
-    N = length(z)
-    Z = Matrix{T}(undef, N - p, p + 1)
-    Z[:,1] .= one(T)
-    for j in 2:p + 1
-        Z[:,j] = view(z, j - 1:N - p + j - 2)
-    end
-    ϕ = Z \ view(z, p + 1:N)
-    μ = ϕ[1]
-    ε = view(z, p + 1:N) - Z * ϕ
-    σ2 = dot(ε, ε) / (N - p)
-    return μ, reverse(view(ϕ, 2:p + 1)), σ2
+struct ARParams <: AbstractParams
+    p::Vector{<:Integer}
 end
+
+ARParams(c::Bool, p::Integer) = ARParams(collect(!c:p))
+ARParams(p::Integer) = ARParams(true, p)
+
+function fit(params::ARParams, z::AbstractVector{T}) where T
+    p = params.p
+    P = maximum(p)
+    if p == collect(0:P) || p == collect(1:P)
+        ϕ, σ2 = levinson_durbin(z, P)
+        if p[1] == 0
+            μ = mean(z) * (1 - sum(ϕ))
+        else
+            μ = zero(T)
+        end
+    else
+        μ, ϕ, σ2 = least_squares(z, params.p)
+    end
+    return ARModel{P}(μ, ϕ, σ2)
+end
+
+const ARModel{p,T} = ARMAXModel{p,0,0,T}
+ARModel{p}(μ::T,ϕ::AbstractVector{T},σ2::T) where {p,T} = ARMAXModel{p,0,0,T}(μ, ϕ, T[], T[], σ2)
+
+isstationary(model::ARModel) = all(norm.(roots(Polynomial([1;.-model.ϕ]))) .> 1)
+
+isinvertible(model::ARModel) = true
+
+function forecast(model::M, z::AbstractVector{T}) where {p,T,M <: ARModel{p,T}}
+    N = length(z)
+    zhat = model.μ
+    for i in 1:min(N, p)
+        zhat += model.ϕ[i] * z[N - i + 1]
+    end
+    return zhat
+end
+
+least_squares(z::AbstractVector{T}, p::Integer) where T = least_squares(z, T[], zeros(T, 0, 0), collect(0:p), Int[])
 
 function yule_walker(z::AbstractVector, p::Integer)
     ρ = map(i -> autocorrelation(z, i), 1:p)
     Γ = autocorrelation_matrix(z, p)
     ϕ = cholesky(Γ) \ ρ
     m = mean(z)
-    μ = m * (1 - sum(ϕ))
     γ0 = autocovariance(z, 0) 
     σ2 = (1 - dot(ϕ, ρ)) * γ0
-    return μ, ϕ, σ2
+    return ϕ, σ2
 end
 
 function levinson_durbin!(ϕ::AbstractVector{T}, σ2::Ref{T}, ρ::AbstractVector{T}, p::Integer) where {T}
@@ -52,8 +74,7 @@ function levinson_durbin(z::AbstractVector, p::Integer)
     for i in 1:p
         levinson_durbin!(ϕ, σ2, ρ, i)
     end
-    μ = mean(z) * (1 - sum(ϕ))
-    return μ, ϕ, σ2[]
+    return ϕ, σ2[]
 end
 
 # function burg!(ϕ::AbstractVector{T}, σ2::Ref{T}, f::AbstractVector{T}, b::AbstractVector{T}, p::Integer) where {T}
@@ -115,12 +136,3 @@ end
 #     μ = mean(z) * (1 - sum(ϕ))
 #     return μ, ϕ, σ2[]
 # end
-
-function forecast(model::M, z::AbstractVector{T}) where {p,T,M <: AR{p,T}}
-    zhat = model.μ
-    N = length(z)
-    for i in 1:min(N, p)
-        zhat += model.ϕ[i] * z[N - i + 1]
-    end
-    return zhat
-end
