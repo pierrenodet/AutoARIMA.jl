@@ -2,7 +2,7 @@ using BenchmarkTools, AutoARIMA
 
 const SUITE = BenchmarkGroup()
 
-z = cos.(1:1000000) .* log.(1:1000000) .* randn()
+z = cos.(1:10000) .* log.(1:10000) .* randn()
 
 SUITE["fit"] = BenchmarkGroup()
 
