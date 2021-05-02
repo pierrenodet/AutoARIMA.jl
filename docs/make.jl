@@ -1,7 +1,7 @@
 using Documenter, AutoARIMA
 
 makedocs(
-    sitename="AutoARIMA"
+    sitename="AutoARIMA.jl"
 )
 
 deploydocs(
