@@ -5,49 +5,49 @@ using Test, AutoARIMA, Statistics
         μ, ϕ, θ, σ2 = hannan_rissanen(seriesA, 1, 1)
         @test μ ≈ 2.45 rtol = 0.2
         @test ϕ ≈ [0.87] rtol = 0.05
-        @test θ ≈ [-0.48] rtol = 0.05
+        @test θ ≈ [0.48] rtol = 0.05
         @test σ2 ≈ 0.098 rtol = 0.05
 
-        θ, σ2 = innovations(diff(seriesA), 1, m=10)
-        @test θ ≈ [-0.53] rtol = 0.01
+        θ, σ2 = innovations(diff(seriesA), 1, n=10)
+        @test θ ≈ [0.53] rtol = 0.01
         @test σ2 ≈ 0.107 rtol = 0.01
 
         θ, σ2 = innovations(diff(seriesB), 1)
-        @test θ ≈ [0.09] rtol = 0.05
+        @test θ ≈ [-0.09] rtol = 0.05
         @test σ2 ≈ 52.2 rtol = 0.05
 
-        μ, ϕ, σ2 = levinson_durbin(diff(seriesC), 1)
-        @test μ ≈ 0.0 atol = 0.01
-        @test ϕ ≈ [0.81] rtol = 0.05
-        @test σ2 ≈ 0.019 rtol = 0.05
+        ar = fit(ARParams(false, 1), diff(seriesC))
+        @test ar.μ ≈ 0.0 atol = 0.01
+        @test ar.ϕ ≈ [0.81] rtol = 0.05
+        @test ar.σ2 ≈ 0.019 rtol = 0.05
 
-        θ, σ2 = innovations(diff(diff(seriesC)), 2, m=30)
-        @test θ ≈ [-0.09,-0.07] rtol = 0.05
+        θ, σ2 = innovations(diff(diff(seriesC)), 2, n=30)
+        @test θ ≈ [0.09,0.07] rtol = 0.05
         @test σ2 ≈ 0.020 rtol = 0.05
 
-        μ, ϕ, σ2 = levinson_durbin(seriesD, 1)
-        @test μ ≈ 1.32 rtol = 0.05
-        @test ϕ ≈ [0.86] rtol = 0.05
-        @test σ2 ≈ 0.093 rtol = 0.05
+        ar = fit(ARParams(1), seriesD)
+        @test ar.μ ≈ 1.32 rtol = 0.05
+        @test ar.ϕ ≈ [0.86] rtol = 0.05
+        @test ar.σ2 ≈ 0.093 rtol = 0.05
 
         θ, σ2 = innovations(diff(seriesD), 1)
-        @test θ ≈ [-0.05] rtol = 0.05
+        @test θ ≈ [0.05] rtol = 0.05
         @test σ2 ≈ 0.096 rtol = 0.01
 
-        μ, ϕ, σ2 = levinson_durbin(seriesE, 2)
-        @test μ ≈ 14.9 rtol = 0.05
-        @test ϕ ≈ [1.32,-0.63] rtol = 0.05
-        @test σ2 ≈ 289.0 rtol = 0.05
+        ar = fit(ARParams(2), seriesE)
+        @test ar.μ ≈ 14.9 rtol = 0.05
+        @test ar.ϕ ≈ [1.32,-0.63] rtol = 0.05
+        @test ar.σ2 ≈ 289.0 rtol = 0.05
 
-        μ, ϕ, σ2 = levinson_durbin(seriesE, 3)
-        @test μ ≈ 13.7 rtol = 0.05
-        @test ϕ ≈ [1.37,-0.74,0.08] rtol = 0.05
-        @test σ2 ≈ 287.0 rtol = 0.05
+        ar = fit(ARParams(3), seriesE)
+        @test ar.μ ≈ 13.7 rtol = 0.05
+        @test ar.ϕ ≈ [1.37,-0.74,0.08] rtol = 0.05
+        @test ar.σ2 ≈ 287.0 rtol = 0.05
 
-        μ, ϕ, σ2 = levinson_durbin(seriesF, 2)
-        @test μ ≈ 58.3 rtol = 0.05
-        @test ϕ ≈ [-0.32,0.18] rtol = 0.05 
-        @test σ2 ≈ 115.0 rtol = 0.05
+        ar = fit(ARParams(2), seriesF)
+        @test ar.μ ≈ 58.3 rtol = 0.05
+        @test ar.ϕ ≈ [-0.32,0.18] rtol = 0.05 
+        @test ar.σ2 ≈ 115.0 rtol = 0.05
     end
 
     @testset "Table3.1" begin
@@ -60,15 +60,17 @@ using Test, AutoARIMA, Statistics
         @test ϕ ≈ [-0.39,0.30,-0.17,0.07,-0.10,-0.05,0.04,-0.04,0.00,0.01,0.11,-0.07,0.15,0.04,0.01] rtol = 0.05
     end
 
-    # @testset "Section9.1" begin
-    #     sarima = auto_sarimax(log.(seriesG), 0, 1, 1, 0, 1, 1, 12)
-    #     @test sarima.θ ≈ [0.4] rtol = 0.05
-    #     @test sarima.Θ ≈ [0.6] rtol = 0.05
-    # end
+    @testset "Section9.1" begin
+        sarima = fit(MSARIMAParams(false,[0,0],[1,1],[1,1],[1,12]), log.(seriesG))
+        @test sarima.ϕ ≈ [1,0,0,0,0,0,0,0,0,0,0,1,-1] rtol = 0.05
+        # @test sarima.θ[1] ≈ 0.4 rtol = 0.05
+        # @test sarima.θ[12] ≈ 0.6 rtol = 0.05
+        @test sarima.θ[13] ≈ -sarima.θ[1]*sarima.θ[12] rtol = 0.05
+    end
 
-    # @testset "Table4.2" begin
-    #     @test AR(ARMA(1.0,SA[-0.3],SA[-0.5],1.0),7).ϕ ≈ SA[0.2,0.4,0.2,0.1,0.05,0.025,0.0125]
-    # end
+    @testset "Table4.2" begin
+        @test AR∞(toarma(ARIMAParams(1,1,1),ARMAModel{1,1}(1.0,[-0.3],[0.5],1.0)),7).ϕ ≈ [0.2,0.4,0.2,0.1,0.05,0.025,0.0125]
+    end
 
 end
 

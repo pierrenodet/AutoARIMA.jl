@@ -1,4 +1,4 @@
-name: Run benchmarks
+name: Benchmark
 
 on:
   pull_request:

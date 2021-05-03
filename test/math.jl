@@ -1,4 +1,4 @@
-using Test, AutoARIMA, StaticArrays
+using Test, AutoARIMA
 
 @testset "Mathematical Properties" begin
 
@@ -6,8 +6,8 @@ using Test, AutoARIMA, StaticArrays
     
     @testset "MA(q) forecast after q steps should be equal to the constant" begin
         μ = 0.1
-        ma = MA(μ,SA[0.2,0.3,-0.5],1.0)
-        z = Float64[0.2,0.5,0.1]
+        ma = MAModel{3}(μ,[0.2,0.3,-0.5],1.0)
+        z = [0.2,0.5,0.1]
         f = Float64[]
         for i in 1:10
             zhat = forecast(ma,z)
