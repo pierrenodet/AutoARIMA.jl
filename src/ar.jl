@@ -13,7 +13,7 @@ function fit(params::ARParams, z::AbstractVector{T}) where T
         ϕ, σ2 = levinson_durbin(z, P)
         μ = params.c ? mean(z) * (1 - sum(ϕ)) : zero(T)
     else
-        μ, ϕ, σ2 = least_squares(z, params.c, params.p)
+        μ, ϕ, θ, β, σ2 = least_squares(z, params.c, params.p)
     end
     return ARModel{P}(μ, ϕ, σ2)
 end
@@ -34,7 +34,8 @@ function forecast(model::M, z::AbstractVector{T}) where {p,T,M <: ARModel{p,T}}
     return zhat
 end
 
-least_squares(z::AbstractVector{T}, c::Bool, p::Integer) where T = least_squares(z, T[], zeros(T, 0, 0), c, collect(1:p), Int[])
+least_squares(z::AbstractVector{T}, c::Bool, p::Vector{<:Integer}) where T = least_squares(z, T[], zeros(T, 0, 0), c, p, Int[])
+least_squares(z::AbstractVector{T}, c::Bool, p::Integer) where T = least_squares(z, c, collect(1:p))
 least_squares(z::AbstractVector, p::Integer) = least_squares(z, true, p)
 
 function yule_walker(z::AbstractVector, p::Integer)

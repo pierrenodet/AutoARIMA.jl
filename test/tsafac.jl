@@ -61,7 +61,7 @@ using Test, AutoARIMA, Statistics
     end
 
     @testset "Section9.1" begin
-        sarima = fit(MSARIMAParams([false,false], [0,0], [1,1], [1,1], [1,12]), log.(seriesG))
+        sarima = fit(MSARIMAParams([0,0], [1,1], [1,1], [1,12]), log.(seriesG))
         @test sarima.ϕ ≈ [1,0,0,0,0,0,0,0,0,0,0,1,-1] rtol = 0.05
         # @test sarima.θ[1] ≈ 0.4 rtol = 0.05
         # @test sarima.θ[12] ≈ 0.6 rtol = 0.05

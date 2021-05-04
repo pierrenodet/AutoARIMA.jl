@@ -8,11 +8,12 @@ function fit(params::MAParams, z::AbstractVector{T}; n::Integer=20) where T
     q = params.q
     Q = maximum(q)
     if q == collect(1:Q)
-        θ, σ2 = innovations(z, Q, n=n)
         μ = mean(z)
+        z = z .- μ
+        θ, σ2 = innovations(z, Q, n=n)
         ma = MAModel{Q}(μ, θ, σ2)
     else
-        ma = fit(ARMAParams(false, 0, q), z, n=n)
+        ma = fit(ARMAParams(false, eltype(q)[], q), z, n=n)
     end
     return ma
 end
