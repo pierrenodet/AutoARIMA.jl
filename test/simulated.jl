@@ -30,18 +30,18 @@ using Test, AutoARIMA, Base.Iterators
 
     end
 
-    # @testset "MA" begin
+    @testset "MA" begin
 
-    #     ma = MAModel{2}(1.0, [0.2,-0.2], 0.2)
-    #     z = Float64[]
-    #     for s in take(simulate(ma), 10000)
-    #         push!(z, s)
-    #     end
-    #     ma = fit(MAParams(2),z)
-    #     @test ma.θ ≈ [0.2,-0.2] rtol = 0.1
-    #     @test ma.σ2 ≈ 0.2 rtol = 0.1
+        ma = MAModel{2}(1.0, [0.2,-0.2], 0.2)
+        z = Float64[]
+        for s in take(simulate(ma), 10000)
+            push!(z, s)
+        end
+        ma = fit(MAParams(2),z)
+        @test ma.θ ≈ [0.2,-0.2] atol = 0.1 rtol = 0.2
+        @test ma.σ2 ≈ 0.2 rtol = 0.1
         
-    # end
+    end
 
     @testset "MA with HR" begin
 
@@ -57,64 +57,63 @@ using Test, AutoARIMA, Base.Iterators
         
     end
 
-    # @testset "ARMA" begin
+    @testset "ARMA" begin
 
-    #     arma = ARMAModel{2,2}(1.0, [-0.2,0.2], [0.2,0.2], 0.2)
-    #     z = Float64[]
-    #     for s in take(simulate(arma), 50000)
-    #         push!(z, s)
-    #     end
-    #     arma= fit(ARMAParams(2,2), z)
-    #     @test arma.μ ≈ 1.0 rtol = 0.1
-    #     @test arma.ϕ ≈ [-0.2,0.2] rtol = 0.1
-    #     @test arma.θ ≈ [0.2,0.2] rtol = 0.1
-    #     @test arma.σ2 ≈ 0.2 rtol = 0.1
+        arma = ARMAModel{2,2}(1.0, [-0.2,0.2], [0.2,0.2], 0.2)
+        z = Float64[]
+        for s in take(simulate(arma), 50000)
+            push!(z, s)
+        end
+        arma= fit(ARMAParams(2,2), z)
+        @test arma.μ ≈ 1.0 rtol = 0.1
+        @test arma.ϕ ≈ [-0.2,0.2] rtol = 0.2
+        @test arma.θ ≈ [0.2,0.2] rtol = 0.2
+        @test arma.σ2 ≈ 0.2 rtol = 0.1
         
-    # end
+    end
 
-    # @testset "ARMA with AR Inf" begin
+    @testset "ARMA with AR Inf" begin
 
-    #     arma = AR∞(ARMAModel{2,2}(5.0,[-0.7,0.2], [0.7,0.2], 0.2), 20)
-    #     z = Float64[]
-    #     for s in take(simulate(arma), 50000)
-    #         push!(z, s)
-    #     end
-    #     μ, ϕ, θ, σ2 = hannan_rissanen(z, 2, 2, n=10)
-    #     @test μ ≈ 5.0 rtol = 0.1
-    #     @test ϕ ≈ [-0.7,0.2] rtol = 0.1
-    #     @test θ ≈ [0.7,0.2] rtol = 0.1
-    #     @test σ2 ≈ 0.2 rtol = 0.1
+        ar = AR∞(ARMAModel{2,2}(1.0,[-0.2,0.2], [0.2,0.2], 0.2), 20)
+        z = Float64[]
+        for s in take(simulate(ar), 50000)
+            push!(z, s)
+        end
+        arma = fit(ARMAParams(2,2), z, n=10)
+        @test arma.μ ≈ 1.0 rtol = 0.1
+        @test arma.ϕ ≈ [-0.2,0.2] rtol = 0.2
+        @test arma.θ ≈ [0.2,0.2] rtol = 0.2
+        @test arma.σ2 ≈ 0.2 rtol = 0.1
         
-    # end
+    end
 
-    # @testset "ARMA with MA Inf" begin
+    @testset "ARMA with MA Inf" begin
 
-    #     arma = MA∞(ARMAModel{2,2}(5.0,[-0.7,0.2], [0.7,0.2], 0.2), 20)
-    #     z = Float64[]
-    #     for s in take(simulate(arma), 50000)
-    #         push!(z, s)
-    #     end
-    #     μ, ϕ, θ, σ2 = hannan_rissanen(z, 2, 2, n=10)
-    #     @test μ ≈ 5.0 rtol = 0.1
-    #     @test ϕ ≈ [-0.7,0.2] rtol = 0.1
-    #     @test θ ≈ [0.7,0.2] rtol = 0.1
-    #     @test σ2 ≈ 0.2 rtol = 0.1
+        ma = MA∞(ARMAModel{2,2}(1.0,[-0.2,0.2], [0.2,0.2], 0.2), 20)
+        z = Float64[]
+        for s in take(simulate(ma), 50000)
+            push!(z, s)
+        end
+        arma = fit(ARMAParams(2,2), z, n=10)
+        @test arma.μ ≈ 1.0 rtol = 0.1
+        @test arma.ϕ ≈ [-0.2,0.2] rtol = 0.2
+        @test arma.θ ≈ [0.2,0.2] rtol = 0.2
+        @test arma.σ2 ≈ 0.2 rtol = 0.1
         
-    # end
+    end
 
-    # @testset "ARIMA" begin
+    @testset "ARIMA" begin
 
-    #     arima = toarma(ARIMAParams(2, 1, 2), ARMAModel{2,2}(2.0, [0.5,-0.3], [0.2,-0.2], 0.2))
-    #     z = Float64[]
-    #     for s in take(simulate(arima), 50000)
-    #         push!(z, s)
-    #     end
-    #     arma = fit(ARMAParams(2,2),difference(z, d=1),n=20)
-    #     @test arma.μ ≈ 2.0 atol = 0.1
-    #     @test arma.ϕ ≈ [0.5,-0.3] rtol = 0.1
-    #     @test arma.θ ≈ [0.2,-0.2] rtol = 0.1
-    #     @test arma.σ2 ≈ 0.2 atol = 0.1
+        arima = toarma(ARIMAParams(2, 1, 2), ARMAModel{2,2}(2.0, [0.5,-0.3], [0.2,-0.2], 0.2))
+        z = Float64[]
+        for s in take(simulate(arima), 50000)
+            push!(z, s)
+        end
+        arma = fit(ARMAParams(2,2),difference(z,d=1),n=20)
+        @test arma.ϕ ≈ [0.5,-0.3] rtol = 0.2
+        @test arma.θ ≈ [0.2,-0.2] rtol = 0.2
+        @test arma.σ2 ≈ 0.2 atol = 0.1
         
-    # end
+    end
     
 end

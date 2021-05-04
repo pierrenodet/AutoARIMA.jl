@@ -1,22 +1,19 @@
 struct ARParams <: AbstractParams
+    c::Bool
     p::Vector{<:Integer}
 end
 
-ARParams(c::Bool, p::Integer) = ARParams(collect(!c:p))
+ARParams(c::Bool, p::Integer) = ARParams(c, collect(1:p))
 ARParams(p::Integer) = ARParams(true, p)
 
 function fit(params::ARParams, z::AbstractVector{T}) where T
     p = params.p
     P = maximum(p)
-    if p == collect(0:P) || p == collect(1:P)
+    if p == collect(1:P)
         ϕ, σ2 = levinson_durbin(z, P)
-        if p[1] == 0
-            μ = mean(z) * (1 - sum(ϕ))
-        else
-            μ = zero(T)
-        end
+        μ = params.c ? mean(z) * (1 - sum(ϕ)) : zero(T)
     else
-        μ, ϕ, σ2 = least_squares(z, params.p)
+        μ, ϕ, θ, β, σ2 = least_squares(z, params.c, params.p)
     end
     return ARModel{P}(μ, ϕ, σ2)
 end
@@ -37,7 +34,9 @@ function forecast(model::M, z::AbstractVector{T}) where {p,T,M <: ARModel{p,T}}
     return zhat
 end
 
-least_squares(z::AbstractVector{T}, p::Integer) where T = least_squares(z, T[], zeros(T, 0, 0), collect(0:p), Int[])
+least_squares(z::AbstractVector{T}, c::Bool, p::Vector{<:Integer}) where T = least_squares(z, T[], zeros(T, 0, 0), c, p, Int[])
+least_squares(z::AbstractVector{T}, c::Bool, p::Integer) where T = least_squares(z, c, collect(1:p))
+least_squares(z::AbstractVector, p::Integer) = least_squares(z, true, p)
 
 function yule_walker(z::AbstractVector, p::Integer)
     ρ = map(i -> autocorrelation(z, i), 1:p)
