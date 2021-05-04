@@ -38,7 +38,7 @@ using Test, AutoARIMA, Base.Iterators
             push!(z, s)
         end
         ma = fit(MAParams(2),z)
-        @test ma.θ ≈ [0.2,-0.2] atol = 0.1 rtol = 0.1
+        @test ma.θ ≈ [0.2,-0.2] atol = 0.1 rtol = 0.2
         @test ma.σ2 ≈ 0.2 rtol = 0.1
         
     end

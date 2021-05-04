@@ -61,6 +61,7 @@ function hannan_rissanen(z::AbstractVector, c::Bool, p::AbstractVector{<:Integer
 end
 
 hannan_rissanen(z::AbstractVector, c::Bool, p::Integer, q::Integer; m::Integer=20, n::Integer=1) = hannan_rissanen(z, c, collect(1:p), collect(1:q); m=m, n=n)
+hannan_rissanen(z::AbstractVector, p::Integer, q::Integer; m::Integer=20, n::Integer=1) = hannan_rissanen(z, true, p, q; m=m, n=n)
 
 function forecast(model::M, z::AbstractVector{T}) where {p,q,T,M <: ARMAModel{p,q,T}}
     N = length(z)
