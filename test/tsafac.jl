@@ -2,7 +2,7 @@ using Test, AutoARIMA, Statistics
 
 @testset "Time Series Analysis Forecasting and Control" begin
     @testset "Table6.5" begin
-        arma = fit(ARMAParams(1,1), seriesA)
+        arma = fit(ARMAParams(true, 1,1), seriesA)
         @test arma.μ ≈ 2.45 rtol = 0.2
         @test arma.ϕ ≈ [0.87] rtol = 0.05
         @test arma.θ ≈ [0.48] rtol = 0.05

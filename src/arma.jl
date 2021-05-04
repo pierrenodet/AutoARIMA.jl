@@ -10,7 +10,7 @@ end
 ARMAParams(c::Bool,p::Integer,q::Integer) = ARMAParams(c, collect(1:p), collect(1:q))
 ARMAParams(p::Integer,q::Integer) = ARMAParams(true, p, q)
 
-function fit(params::ARMAParams, z::AbstractVector; n::Integer=10)
+function fit(params::ARMAParams, z::AbstractVector; n::Integer=2)
     P = isempty(params.p) ? 0 : maximum(params.p)
     Q = isempty(params.q) ? 0 : maximum(params.q)
     return ARMAModel{P,Q}(hannan_rissanen(z, params.c, params.p, params.q, n=n)...)
@@ -30,27 +30,26 @@ end
 const ARMAModel{p,q,T} = ARMAXModel{p,q,0,T}
 ARMAModel{p,q}(μ::T,ϕ::AbstractVector{T},θ::AbstractVector{T},σ2::T) where {p,q,T} = ARMAXModel{p,q,0,T}(μ, ϕ, θ, T[], σ2)
 
-function hannan_rissanen(y::AbstractVector, z::AbstractVector, c::Bool, p::AbstractVector{<:Integer}, q::AbstractVector{<:Integer}; m::Integer=20, n::Integer=10)
+function hannan_rissanen(z::AbstractVector, c::Bool, p::AbstractVector{<:Integer}, q::AbstractVector{<:Integer}; m::Integer=20, n::Integer=10)
     m >= 0 || throw(ArgumentError("order of first ar model should be positive"))
     T = typeof(zero(eltype(z)) / 1)
     N = length(z)
     P = isempty(p) ? 0 : maximum(p)
     Q = isempty(q) ? 0 : maximum(q)
     m = m + max(P, Q)
-    ar = fit(ARParams(false, m), z)
+    ar = fit(ARParams(true, m), z)
     a = residuals(ar, z)[m + 1:N]
     x = zeros(T, 0, 0)
-    Z, ztp1 = ls_matrix(y, z[m + 1:N], a, x, c, p, q)
+    Z, ztp1 = ls_matrix(z[m + 1:N], a, x, c, p, q)
     ϕ0 = Z \ ztp1
     ε = ztp1 - Z * ϕ0
     σ2 = dot(ε, ε) / (N - m - Q)
     μ, ϕ, θ, β = ls_params(ϕ0, c, p, q)
     σ2prev = Inf
     for k in 2:n
-        println(k,σ2)
         arma = ARMAModel{P,Q}(μ, ϕ, θ, σ2)
         a = residuals(arma, z)[m + 1:N]
-        ls_matrix!(Z, y, z[m + 1:N], a, x, c, p, q)
+        ls_matrix!(Z, z[m + 1:N], a, x, c, p, q)
         ϕθ = Z \ ztp1
         ε = ztp1 - Z * ϕθ
         σ2prev = σ2
@@ -61,8 +60,7 @@ function hannan_rissanen(y::AbstractVector, z::AbstractVector, c::Bool, p::Abstr
     return μ, ϕ, θ, σ2
 end
 
-hannan_rissanen(z::AbstractVector, c::Bool, p::AbstractVector{<:Integer}, q::AbstractVector{<:Integer}; m::Integer=20, n::Integer=10) = hannan_rissanen(z, z,c,p,q,m=m,n=n)
-hannan_rissanen(z::AbstractVector, c::Bool, p::Integer, q::Integer; m::Integer=20, n::Integer=1) = hannan_rissanen(z, z, c, collect(1:p), collect(1:q); m=m, n=n)
+hannan_rissanen(z::AbstractVector, c::Bool, p::Integer, q::Integer; m::Integer=20, n::Integer=1) = hannan_rissanen(z, c, collect(1:p), collect(1:q); m=m, n=n)
 
 function forecast(model::M, z::AbstractVector{T}) where {p,q,T,M <: ARMAModel{p,q,T}}
     N = length(z)

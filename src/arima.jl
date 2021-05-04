@@ -17,15 +17,13 @@ function toarma(params::ARIMAParams, arma::ARMAModel)
     d = params.d
     ϕdp = Polynomial([1;.-arma.ϕ]) * Polynomial(1 - variable())^d
     ϕ0 = .-coeffs(ϕdp)[2:end]
-    μ0 = c ? arma.μ /(1-sum(arma.ϕ))*(1-sum(ϕ0)) : zero(T)
+    μ0 = params.c ? arma.μ /(1-sum(arma.ϕ))*(1-sum(ϕ0)) : zero(T)
     μ0 = isnan(μ0) ? 0 : μ0
     return ARMAModel{P + d,Q}(μ0, ϕ0, arma.θ, arma.σ2)
 end
 
 function fit(params::ARIMAParams, z::AbstractVector)
     length(z) > params.d || throw(DomainError("ARIMA requires at least d data points"))
-    P = isempty(params.p) ? 0 : maximum(params.p)
-    Q = isempty(params.q) ? 0 : maximum(params.q)
-    arma = ARMAModel{P,Q}(hannan_rissanen(difference(z, d=params.d), z, params.c, params.p, params.q, n=n)...)
+    arima = fit(ARMAParams(params.c, params.p, params.q),  difference(z, d=params.d))
     return toarma(params, arima)
 end
