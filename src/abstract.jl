@@ -3,7 +3,21 @@ abstract type AbstractModel{T} end
 abstract type AbstractParams end
 
 function k(m::M) where {M <: AbstractModel}
-    return sum(m.ϕ .!= 0) + sum(m.θ .!= 0)
+    return sum(m.ϕ .!= 0) + sum(m.θ .!= 0) + m.μ !=0 + 1
+end
+
+function fit(params::AbstractVector{AbstractParams}, z::AbstractVector; criterium=aicc)
+    criteria = []
+    models = []
+    for param in params
+        model = fit(param, z)
+        perf = criterium(model, residuals(model, z))
+        push!(criteria, perf)
+        push!(models, model)
+        println("param : $param")
+        println("criterium : $perf")
+    end
+    return models[findmin(criteria)[2]]
 end
 
 forecast(model::M) where {T,M <: AbstractModel{T}} = forecast(model, T[])

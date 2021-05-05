@@ -6,6 +6,7 @@ using Polynomials
 using RecipesBase
 using StaticArrays
 using Statistics
+using HypothesisTests
 
 export seriesA,seriesB,seriesB2,seriesC,seriesD,seriesE,seriesF,seriesG,dowj,wine,lake
 export autocovariance,autocovariance_matrix,autocorrelation,autocorrelation_matrix,partial_autocorrelation
@@ -33,5 +34,6 @@ include("ar.jl")
 include("ma.jl")
 include("arima.jl")
 include("sarima.jl")
+include("auto.jl")
 
 end

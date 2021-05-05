@@ -77,7 +77,7 @@ function forecast(model::M, z::AbstractVector{T}) where {p,q,T,M <: ARMAModel{p,
         end
     end
     zhat = model.μ
-    for j in 1:min(N, q)
+    for j in 1:min(N+1, q)
         zhat -= model.θ[j] * a[N - j + 2]
     end
     for j in 1:min(N, p)

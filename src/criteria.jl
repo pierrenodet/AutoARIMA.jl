@@ -3,7 +3,7 @@ function mse(m::M, z::AbstractVector{T}) where {T,M <: AbstractModel{T}}
 end
 
 function rmse(m::M, z::AbstractVector{T}) where {T,M <: AbstractModel{T}}
-    return sqrt(residuals(m, z))
+    return sqrt.(mse(m, z))
 end
 
 function mae(m::M, z::AbstractVector{T}) where {T,M <: AbstractModel{T}}
@@ -15,12 +15,14 @@ function mape(m::M, z::AbstractVector{T}) where {T,M <: AbstractModel{T}}
     return mean(abs.(residuals(m, z)) ./ z)
 end
 
-function aic(m::M) where {M <: AbstractModel}
+function aic(m::M, z::AbstractVector) where {M <: AbstractModel}
     return -2 * log(m.σ2) + 2 * k(m)
 end
 
+aic(m::M) where {T,M <: AbstractModel{T}} = aic(m, T[])
+
 function aicc(m::M, z::AbstractVector) where {M <: AbstractModel}
-    return aic(m) + 2 * k(m) * (k(m) + 1) / (length(z) - k(m) - 1)
+    return aic(m, z) + 2 * k(m) * (k(m) + 1) / (length(z) - k(m) - 1)
 end
 
 function bic(m::M, z::AbstractVector) where {M <: AbstractModel}

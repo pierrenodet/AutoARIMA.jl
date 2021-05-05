@@ -4,6 +4,7 @@ authors = ["Pierre Nodet <nodet.pierre@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+HypothesisTests = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"

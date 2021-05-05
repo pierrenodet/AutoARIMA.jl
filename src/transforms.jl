@@ -7,6 +7,14 @@ function boxcox(z, λ)
 	end
 end
 
+function inv_boxcox(z, λ)
+    if λ == 0
+        return exp.(z)
+    else 
+        return (λ .* z .+ 1).^(1/λ)
+    end
+end
+
 function guerrero(z; lower=-1, upper=2, s=2)
     s >= 2 || throw(ArgumentError("guerrero requires seasonality to be higher or equal to 2"))
     N = length(z)

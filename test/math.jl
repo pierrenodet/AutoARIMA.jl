@@ -17,4 +17,10 @@ using Test, AutoARIMA
         @test all(f[4:end] .≈ μ)
     end
 
+    @testset "BoxCox" begin
+        z = rand(1000)
+        @test z ≈ inv_boxcox(boxcox(z,0.1),0.1)
+        @test z ≈ inv_boxcox(boxcox(z,0.0),0.0)
+    end
+
 end
