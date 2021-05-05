@@ -12,7 +12,7 @@ export seriesA,seriesB,seriesB2,seriesC,seriesD,seriesE,seriesF,seriesG,dowj,win
 export autocovariance,autocovariance_matrix,autocorrelation,autocorrelation_matrix,partial_autocorrelation
 export isinversible, isstationary
 export innovations, levinson_durbin, least_squares, yule_walker, hannan_rissanen
-export boxcox, guerrero, difference, integrate
+export boxcox, inv_boxcox, guerrero, difference, integrate
 export simulate, forecast, fit, toarma, k, residuals
 export aic, aicc, bic, mse, rmse, mae, mape
 export correlogram,partial_correlogram
