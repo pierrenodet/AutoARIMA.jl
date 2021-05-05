@@ -27,7 +27,7 @@ function residuals!(α::AbstractVector{T}, model::M, z::AbstractVector{T}) where
     N = length(z)
     α[1] = z[1] - forecast(model)
     for i in 2:N
-        α[i] = z[i] - forecast(model, view(z, 1:i - 1))
+        α[i] = z[i] - forecast(model, view(z, 1:i - 1), view(α, 1:i-1))
     end
     return α
 end

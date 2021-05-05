@@ -1,7 +1,7 @@
 function finddifference(z, p, s, dmax)
     Δz = z
     d = 0
-    while d < dmax && pvalue(ADFTest(Δz, :none, p)) > 0.05 Δz = difference(Δz, s=s); d += 1 end
+    while d < dmax && pvalue(ADFTest(Δz, :none, p)) > 0.05 d += 1; Δz = difference(z, d=d, s=s)  end
     return d
 end
 

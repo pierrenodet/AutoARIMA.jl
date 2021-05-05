@@ -26,15 +26,15 @@ function ls_matrix!(Z::AbstractMatrix{T}, z::AbstractVector{T}, a::AbstractVecto
     Nq = length(q)
     X = size(x, 2)
     if c
-        Z[:,1] = ones(T, N - P - Q)
+        Z[:,1] .= 1
     end
     for (i, l) in enumerate(p)
-        Z[:,i + c] = view(z, P + Q - l + 1:N - l)
+        @views Z[:,i + c] = z[P + Q - l + 1:N - l]
     end
     for (i, l) in enumerate(q)
-        Z[:,i + Np + c] = .-view(a, P + Q - l + 1:N - l)
+        @views Z[:,i + Np + c] = -a[P + Q - l + 1:N - l]
     end
-    if X > 0 Z[:, Np + Nq + 1 + c:end] = view(x, P:N - 1, :) end
+    if X > 0 @views Z[:, Np + Nq + 1 + c:end] = x[P:N - 1, :] end
     return Z, z[P + Q + 1:N]
 end
 
@@ -58,4 +58,4 @@ function least_squares(z::AbstractVector{T}, a::AbstractVector{T}, x::AbstractMa
     return μ, ϕ, θ, β, σ2
 end
 
-least_squares(z::AbstractVector{T}, a::AbstractVector{T}, x::AbstractMatrix{T}, c::Bool, p::Integer, q::Integer) where T = least_squares(z, a, x, collect(0:p), collect(1:q))
+least_squares(z::AbstractVector{T}, a::AbstractVector{T}, x::AbstractMatrix{T}, c::Bool, p::Integer, q::Integer) where T = least_squares(z, a, x, c, collect(0:p), collect(1:q))

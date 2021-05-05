@@ -34,6 +34,8 @@ function forecast(model::M, z::AbstractVector{T}) where {p,T,M <: ARModel{p,T}}
     return zhat
 end
 
+forecast(model::M, z::AbstractVector{T}, a::AbstractVector{T}) where {p,T,M <: ARModel{p,T}} = forecast(model, z)
+
 least_squares(z::AbstractVector{T}, c::Bool, p::Vector{<:Integer}) where T = least_squares(z, T[], zeros(T, 0, 0), c, p, Int[])
 least_squares(z::AbstractVector{T}, c::Bool, p::Integer) where T = least_squares(z, c, collect(1:p))
 least_squares(z::AbstractVector, p::Integer) = least_squares(z, true, p)
@@ -61,7 +63,7 @@ function levinson_durbin!(ϕ::AbstractVector{T}, σ2::Ref{T}, ρ::AbstractVector
         ϕ[j] -= ϕ[p] * ϕ[p - j]
         ϕ[p - j] -= ϕ[p] * tmp
     end
-    if isodd(p - 1) ϕ[div(p - 1, 2) + 1] *= (one(T) - ϕ[p]) end
+        if isodd(p - 1) ϕ[div(p - 1, 2) + 1] *= (one(T) - ϕ[p]) end
     σ2[] *= (one(T) - ϕ[p]^2)
 end
 

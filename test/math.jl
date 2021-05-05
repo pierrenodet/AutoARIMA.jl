@@ -14,6 +14,7 @@ using Test, AutoARIMA
             push!(z,zhat)
             push!(f,zhat)
         end
+        println(f)
         @test all(f[4:end] .≈ μ)
     end
 

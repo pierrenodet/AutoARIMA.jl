@@ -63,6 +63,18 @@ end
 hannan_rissanen(z::AbstractVector, c::Bool, p::Integer, q::Integer; m::Integer=20, n::Integer=1) = hannan_rissanen(z, c, collect(1:p), collect(1:q); m=m, n=n)
 hannan_rissanen(z::AbstractVector, p::Integer, q::Integer; m::Integer=20, n::Integer=1) = hannan_rissanen(z, true, p, q; m=m, n=n)
 
+function forecast(model::M,z::AbstractVector{T},a::AbstractVector{T}) where {p,q,T,M <: ARMAModel{p,q,T}}
+    N = length(z)
+    zhat = model.μ
+    for j in 1:min(N, q)
+        zhat -= model.θ[j] * a[N - j + 1]
+    end
+    for j in 1:min(N, p)
+        zhat += model.ϕ[j] * z[N - j + 1]
+    end
+    return zhat
+end 
+
 function forecast(model::M, z::AbstractVector{T}) where {p,q,T,M <: ARMAModel{p,q,T}}
     N = length(z)
     a = Vector{T}(undef, N + 1)
@@ -76,14 +88,7 @@ function forecast(model::M, z::AbstractVector{T}) where {p,q,T,M <: ARMAModel{p,
             a[i + 1] -= model.ϕ[j] * z[i - j]
         end
     end
-    zhat = model.μ
-    for j in 1:min(N+1, q)
-        zhat -= model.θ[j] * a[N - j + 2]
-    end
-    for j in 1:min(N, p)
-        zhat += model.ϕ[j] * z[N - j + 1]
-    end
-    return zhat
+    return forecast(model,z,a[2:N+1])
 end
 
 function MA∞(model::M, m::Integer) where {p,q,T,M <: ARMAModel{p,q,T}}
