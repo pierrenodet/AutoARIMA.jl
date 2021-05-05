@@ -6,7 +6,7 @@ using Test, AutoARIMA, Base.Iterators
 
         ar = ARModel{2}(0.0, [0.8,-0.2], 0.2)
         z = Float64[]
-        for s in take(simulate(ar), 10000)
+        for s in take(simulate(ar), 50000)
             push!(z, s)
         end
         ar = fit(ARParams(2),z)
@@ -20,7 +20,7 @@ using Test, AutoARIMA, Base.Iterators
 
         ar = ARModel{2}(0.0, [0.8,-0.2], 0.2)
         z = Float64[]
-        for s in take(simulate(ar), 10000)
+        for s in take(simulate(ar), 50000)
             push!(z, s)
         end
         arma = fit(ARMAParams(2,0),z)
@@ -34,11 +34,11 @@ using Test, AutoARIMA, Base.Iterators
 
         ma = MAModel{2}(1.0, [0.2,-0.2], 0.2)
         z = Float64[]
-        for s in take(simulate(ma), 10000)
+        for s in take(simulate(ma), 50000)
             push!(z, s)
         end
-        ma = fit(MAParams(2),z,n=1000)
-        @test ma.θ ≈ [0.2,-0.2] atol = 0.1 rtol = 0.3
+        ma = fit(MAParams(2),z,n=5)
+        @test ma.θ ≈ [0.2,-0.2] atol = 0.15
         @test ma.σ2 ≈ 0.2 rtol = 0.1
         
     end
@@ -79,7 +79,7 @@ using Test, AutoARIMA, Base.Iterators
         for s in take(simulate(ar), 50000)
             push!(z, s)
         end
-        arma = fit(ARMAParams(2,2), z, n=10)
+        arma = fit(ARMAParams(2,2), z, n=2)
         @test arma.μ ≈ 1.0 rtol = 0.1
         @test arma.ϕ ≈ [-0.2,0.2] rtol = 0.2
         @test arma.θ ≈ [0.2,0.2] rtol = 0.2
@@ -94,7 +94,7 @@ using Test, AutoARIMA, Base.Iterators
         for s in take(simulate(ma), 50000)
             push!(z, s)
         end
-        arma = fit(ARMAParams(2,2), z, n=10)
+        arma = fit(ARMAParams(2,2), z, n=2)
         @test arma.μ ≈ 1.0 rtol = 0.1
         @test arma.ϕ ≈ [-0.2,0.2] rtol = 0.2
         @test arma.θ ≈ [0.2,0.2] rtol = 0.2
@@ -109,7 +109,7 @@ using Test, AutoARIMA, Base.Iterators
         for s in take(simulate(arima), 50000)
             push!(z, s)
         end
-        arma = fit(ARMAParams(2,2),difference(z,d=1),n=20)
+        arma = fit(ARMAParams(2,2),difference(z,d=1),n=2)
         @test arma.ϕ ≈ [0.5,-0.3] rtol = 0.2
         @test arma.θ ≈ [0.2,-0.2] rtol = 0.2
         @test arma.σ2 ≈ 0.2 atol = 0.1

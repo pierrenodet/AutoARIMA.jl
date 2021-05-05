@@ -20,6 +20,7 @@ export AbstractModel, AbstractParams
 export ARParams, MAParams, ARMAParams, ARIMAParams, MSARIMAParams
 export ARModel, MAModel, ARMAModel
 export MA∞, AR∞
+export boxjenkins
 
 include("datasets.jl")
 include("stats.jl")
